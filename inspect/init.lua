@@ -1,6 +1,6 @@
 local inspect ={
 	_VERSION = 'inspect.lua 3.1.0',
-	_URL     = 'http://github.com/kikito/inspect.lua',
+	_URL     = 'https://github.com/Corecii/roblox-inspect',
 	_DESCRIPTION = 'human-readable representations of tables',
 	_LICENSE = [[
 		MIT LICENSE
