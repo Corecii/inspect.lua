@@ -193,7 +193,9 @@ local function processRecursive(process, item, path, visited)
 	return processed
 end
 
-
+local function tryGetInstanceClassName(instance)
+	return instance.ClassName
+end
 
 -------------------------------------------------------------------
 
@@ -227,7 +229,7 @@ end
 function Inspector:getId(v)
 	local id = self.ids[v]
 	if not id then
-		local tv = type(v)
+		local tv = typeof(v)
 		id              = (self.maxIds[tv] or 0) + 1
 		self.maxIds[tv] = id
 		self.ids[v]     = id
@@ -246,7 +248,7 @@ function Inspector:putTable(t)
 	if t == inspect.KEY or t == inspect.METATABLE then
 		self:puts(tostring(t))
 	elseif self:alreadyVisited(t) then
-		self:puts('<table ', self:getId(t), '>')
+		self:puts('<table:', self:getId(t), '>')
 	elseif self.level >= self.depth then
 		self:puts('{...}')
 	else
@@ -310,7 +312,19 @@ function Inspector:putValue(v)
 	elseif tv == 'table' then
 		self:putTable(v)
 	else
-		self:puts('<', tv, ' ', self:getId(v), '>')
+		local rtv = typeof(v)
+		if rtv == 'userdata' then
+			self:puts('<', rtv, ':', self:getId(v), '>')
+		elseif rtv == 'Instance' then
+			local success, className = pcall(tryGetInstanceClassName, v)
+			if success then
+				self:puts('<', rtv, ':', self:getId(v), ' ', className, ' ', tostring(v), '>')
+			else
+				self:puts('<', rtv, ':', self:getId(v), ' locked>')
+			end
+		else
+			self:puts('<', rtv, ':', self:getId(v), ' ', tostring(v), '>')
+		end
 	end
 end
 
