@@ -1,9 +1,7 @@
 inspect.lua
 ===========
 
-[![Build Status](https://travis-ci.org/kikito/inspect.lua.png?branch=master)](https://travis-ci.org/kikito/inspect.lua)
-[![Coverage Status](https://coveralls.io/repos/github/kikito/inspect.lua/badge.svg?branch=master)](https://coveralls.io/github/kikito/inspect.lua?branch=master)
-
+This is a rotriever-compatible version of [inspect.lua](https://github.com/kikito/inspect.lua)
 
 This library transforms any Lua value into a human-readable representation. It is especially useful for debugging errors in tables.
 
@@ -61,14 +59,28 @@ assert(inspect({a={b=2}}) == [[{
 }]])
 ```
 
-Functions, userdata and any other custom types from Luajit are simply as `<function x>`, `<userdata x>`, etc.:
+Functions, userdata and any other custom types are simply as `<function:x>`, `<userdata:x>`, etc.:
 
 ```lua
 assert(inspect({ f = print, ud = some_user_data, thread = a_thread} ) == [[{
-  f = <function 1>,
-  u = <userdata 1>,
-  thread = <thread 1>
+  f = <function:1>,
+  u = <userdata:1>,
+  thread = <thread:1>
 }]])
+```
+
+Roblox Instances are `<Instance:x classname name>`:
+
+```lua
+assert(inspect(workspace.Baseplate) == "<Instance:1 Part Baseplate>")
+```
+
+Locked Roblox Instances are `<Instance:x locked>`.
+
+Roblox types are `<type:x tostring>`:
+
+```lua
+assert(inspect(Vector3.new()) == "<Vector3:1 0 0 0>")
 ```
 
 If the table has a metatable, inspect will include it at the end, in a special field called `<metatable>`:
@@ -88,7 +100,7 @@ assert(inspect(setmetatable({a=1}, {b=2}) == [[{
 local a = {1, 2}
 local b = {3, 4, a}
 a[3] = b -- a references b, and b references a
-assert(inspect(a) == "<1>{ 1, 2, { 3, 4, <table 1> } }")
+assert(inspect(a) == "<1>{ 1, 2, { 3, 4, <table:1> } }")
 ```
 
 Notice that since both `a` appears more than once in the expression, it is prefixed by `<1>` and replaced by `<table 1>` every time it appears later on.
@@ -221,31 +233,19 @@ This method is *not* appropriate for saving/restoring tables. It is meant to be 
 Installation
 ============
 
-If you are using luarocks, just run
+If you are using rotriever, add this repository to your `rotriever.toml`:
 
-    luarocks install inspect
+```toml
+inspect = { git = "https://github.com/Corecii/roblox-inspect" }
+```
 
-Otherwise, you can just copy the inspect.lua file somewhere in your projects (maybe inside a /lib/ folder) and require it accordingly.
+If you are using [Rojo](https://rojo.space/):
+* Copy the `init.lua` file into your project and name it `inspect.lua`
 
-Remember to store the value returned by require somewhere! (I suggest a local variable named inspect, although others might like table.inspect)
+If you are using only Roblox Studio:
+* Copy the [source of `init.lua`](/inspect/init.lua) into a ModuleScript in your project and name it `inspect`.
 
-    local inspect = require 'inspect'
-          -- or --
-    local inspect = require 'lib.inspect'
-
-Also, make sure to read the license; the text of that license file must appear somewhere in your projects' files. For your convenience, it's included at the begining of inspect.lua.
-
-Specs
-=====
-
-This project uses [busted](http://olivinelabs.com/busted/) for its specs. If you want to run the specs, you will have to install busted first. Then just execute the following from the root inspect folder:
-
-    busted
-
-Change log
-==========
-
-Read it on the CHANGELOG.md file
+Make sure to read the license; the text of that license file must appear somewhere in your projects' files. For your convenience, it's included at the begining of init.lua.
 
 
 
